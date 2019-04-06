@@ -30,7 +30,8 @@ EOF
 data "template_file" "aws_instance_identity" {
     template = <<EOF
 AWS_PATH='${data.external.tools.result["aws"]}'
-echo "{\"awsPath\":\"$AWS_PATH\"}"
+STS_CALLER_IDENTITY=$($AWS_PATH sts get-caller-identity --output text 2>&1)
+echo "{\"awsPath\":\"$AWS_PATH\",\"stsCallerIdentity\":\"$STS_CALLER_IDENTITY\"}"
 EOF
 }
 

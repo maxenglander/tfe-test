@@ -3,27 +3,28 @@ data "template_file" "tools" {
 AWS_INSTALL_FAILURE=""
 PIP_INSTALL_FAILURE=""
 WORKDIR="/tmp/${uuid()}"
+export PATH="$HOME/.local/bin:$PATH"
 
 if ! which aws > /dev/null; then
   if ! which pip > /dev/null; then
-    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py > /dev/null
+    curl -fsSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py > /dev/null
     if ! python get-pip.py --user > /dev/null; then
       PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1 | tr "\n" ";" | tr -d ":,")"
     fi
   fi
 
   if ! which aws > /dev/null; then
-    if ! PATH=$HOME/.local/bin:$PATH pip install --user awscli > /dev/null; then
-      AWS_INSTALL_FAILURE="$(PATH=$HOME/.local/bin:$PATH pip install --user awscli 2>&1 | tr "\n" ";" | tr -d ":,")"
+    if ! pip install --user awscli > /dev/null; then
+      AWS_INSTALL_FAILURE="$(pip install --user awscli 2>&1 | tr "\n" ";" | tr -d ":,")"
     fi
   fi
 fi
 
 PYTHONPATH=$(which python 2> /dev/null)
-PIPPATH=$(PATH=$HOME/.local/bin:$PATH which pip 2> /dev/null)
-AWSPATH=$(PATH=$HOME/.local/bin:$PATH which aws 2> /dev/null)
+PIPPATH=$(which pip 2> /dev/null)
+AWSPATH=$(which aws 2> /dev/null)
 
-echo "{\"aws\":\"$AWSPATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"pip\":\"$PIPPATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
+echo "{\"aws\":\"$AWSPATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"path\":\"$PATH\",\"pip\":\"$PIPPATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
 EOF
 }
 

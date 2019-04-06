@@ -20,7 +20,8 @@ fi
 
 if ! which aws > /dev/null; then
   if ! echo y | $PIP_PATH install --user awscli > /dev/null; then
-      AWS_INSTALL_FAILURE="$(echo y | $PIP_PATH install --user awscli 2>&1)"
+    >&2 echo meow
+#      AWS_INSTALL_FAILURE="$(echo y | $PIP_PATH install --user awscli 2>&1)"
   fi
   AWS_PATH=$(which aws)
 fi

@@ -1,6 +1,6 @@
 data "template_file" "instance_identity" {
     template = <<EOF
-curl -s http://169.254.169.254/latest/dynamic/instance-identity/document
+curl -s http://google.com
 EOF
 }
 

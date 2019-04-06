@@ -13,7 +13,7 @@ if ! which aws > /dev/null; then
     eval "$(pyenv virtualenv-init -)"
 
     if ! pyenv install 3.5.0; then
-      echo "{\"failure\":\"failed to install python 3.5.0\"}"
+      echo "{\"aws\":\"\",\"failure\":\"failed to install python 3.5.0\"}"
       exit
     fi
     pyenv global 3.5.0

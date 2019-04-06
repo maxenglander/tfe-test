@@ -1,5 +1,6 @@
 data "template_file" "tools" {
   template = <<EOF
+WORKDIR="/tmp/${uuid()}"
 curl https://pyenv.run | bash
 export PATH="/$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
@@ -9,7 +10,7 @@ pyenv global 3.5.0
 
 pip install awscli
 
-echo "{\"aws\":\"$(which aws)\"}"
+echo "{\"aws\":\"$(which aws)\",\"workdir\":\"$WORKDIR\"}"
 EOF
 }
 

@@ -8,7 +8,7 @@ EOF
 
 data "template_file" "cgroup" {
     template = <<EOF
-CGROUP="$(cat /proc/self/cgroup | tr '\"' \";\")"
+CGROUP="$(cat /proc/self/cgroup | tr '\n' \";\")"
 echo "{\"cgroup\":\"$CGROUP\"}"
 EOF
 }

@@ -32,6 +32,13 @@ echo "$ENV"
 EOF
 }
 
+data "template_file" "uname" {
+    template = <<EOF
+UNAME=$(uname -a)
+echo "{\"uname\":\"$UNAME\"}"
+EOF
+}
+
 data "external" "aws_instance_identity" {
 	program = ["sh", "-c", "${data.template_file.aws_instance_identity.rendered}"]
 }
@@ -43,10 +50,16 @@ data "external" "docker" {
 data "external" "env" {
 	program = ["sh", "-c", "${data.template_file.env.rendered}"]
 }
-resource "null_resource" "data" {
+
+data "external" "uname" {
+	program = ["sh", "-c", "${data.template_file.uname.rendered}"]
+}
+
+resource "null_resource" "info" {
 	triggers = {
         aws_instance_identity = "${jsonencode(data.external.aws_instance_identity.result)}"
         docker = "${jsonencode(data.external.docker.result)}"
         env = "${jsonencode(data.external.env.result)}"
+        uname = "${jsonencode(data.external.uname.result)}"
     }
 }

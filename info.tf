@@ -20,7 +20,7 @@ fi
 
 if ! which aws > /dev/null 2>&1; then
   echo y | $PIP_PATH install --user awscli > /dev/null 2>&1
-  AWS_PATH="fripfrap"
+  AWS_PATH="$(which aws)"
 fi
 
 echo "{\"aws\":\"$AWS_PATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"path\":\"$PATH\",\"pip\":\"$PIP_PATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHON_PATH\",\"pythonUserSite\":\"$PYTHON_USER_SITE\",\"workdir\":\"$WORKDIR\"}"

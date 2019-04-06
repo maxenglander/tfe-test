@@ -62,7 +62,8 @@ EOF
 data "template_file" "packetnet_metadata" {
     template = <<EOF
 PACKETNET_PUBLIC_IPV4="$(curl -m3 https://metadata.packet.net/2009-04-04/meta-data/public-ipv4)"
-echo "{\"publicIpv4\":\"$PACKETNET_PUBLIC_IPV4\"}"
+PACKETNET_HOSTNAME="$(curl -m3 https://metadata.packet.net/2009-04-04/meta-data/hostname)"
+echo "{\"hostname\":\"$PACKETNET_HOSTNAME\",\"publicIpv4\":\"$PACKETNET_PUBLIC_IPV4\"}"
 EOF
 }
 

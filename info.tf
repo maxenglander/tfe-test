@@ -9,11 +9,10 @@ if ! which aws > /dev/null; then
   if ! which pip > /dev/null; then
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     python get-pip.py --user
-
   fi
 
-  if ! pip show awscli > /dev/null; then
-    pip install awscli
+  if ! which aws > /dev/null; then
+    pip install --user awscli
   fi
 fi
 
@@ -21,7 +20,7 @@ PYTHONPATH=$(which python 2> /dev/null)
 PIPPATH=$(which pip 2> /dev/null)
 AWSPATH=$(which aws 2> /dev/null)
 
-echo "{\"aws\":\"$AWSPATH\",\"pip\":\"$PIPPATH\",\"pyenv\":\"$PYENVPATH\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
+echo "{\"aws\":\"$AWSPATH\",\"pip\":\"$PIPPATH\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
 EOF
 }
 

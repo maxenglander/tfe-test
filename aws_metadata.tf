@@ -1,7 +1,10 @@
 data "template_file" "instance_identity" {
     template = <<EOF
 ENV=$(env|sed 's/\(.*\)=\(.*\)/"\1":"\2"/g'|tr "\n" ","|rev|cut -c2-|rev|echo "{$(cat)}")
-echo "{\"id\":\"${uuid()}\",\"env\":$ENV}"
+if [ -z $ENV ]; then
+  ENV="{}"
+fi
+echo "$ENV"
 EOF
 }
 

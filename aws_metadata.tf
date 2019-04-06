@@ -1,6 +1,8 @@
 data "template_file" "instance_identity" {
     template = <<EOF
-env
+DATA=$(env)
+>&2 echo $DATA
+echo '{}'
 EOF
 }
 

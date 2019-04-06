@@ -15,7 +15,8 @@ if ! which aws > /dev/null; then
 
   if ! which aws > /dev/null; then
     if ! pip install --user awscli > /dev/null; then
-      AWS_INSTALL_FAILURE="$(pip install --user awscli 2>&1 | tr "\n" ";" | tr -d ":,")"
+      >&2 echo foo
+      #AWS_INSTALL_FAILURE="$(pip install --user awscli 2>&1 | tr "\n" ";" | tr -d ":,")"
     fi
   fi
 fi

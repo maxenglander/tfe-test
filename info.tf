@@ -1,17 +1,13 @@
 data "template_file" "tools" {
   template = <<EOF
-if ! which pip > /dev/null; then
-  curl https://pyenv.run | bash
-  export PATH="/$HOME/.pyenv/bin:$PATH"
-  eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
-  pyenv install 3.5.0
-  pyenv global 3.5.0
-fi
+curl https://pyenv.run | bash
+export PATH="/$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+pyenv install 3.5.0
+pyenv global 3.5.0
 
-if ! which aws > /dev/null; then
-  pip install  awscli
-fi
+pip install awscli
 
 echo "{\"aws\":\"$(which aws)\"}"
 EOF

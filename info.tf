@@ -32,7 +32,7 @@ EOF
 
 data "template_file" "hostname" {
     template = <<EOF
-HOSTNAME=$(hostname -d)
+HOSTNAME=$(hostname)
 echo "{\"hostname\":\"$HOSTNAME\"}"
 EOF
 }

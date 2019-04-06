@@ -1,32 +1,14 @@
 data "template_file" "tools" {
   template = <<EOF
 AWS_INSTALL_FAILURE=""
+AWS_PATH=$(which aws 2> /dev/null)
 PIP_INSTALL_FAILURE=""
+PIP_PATH=$(which pip 2> /dev/null)
+PYTHON_PATH=$(which python 2> /dev/null)
+PYTHON_USER_SITE=$(python -m site --user-site)
 WORKDIR="/tmp/${uuid()}"
-export PATH="$HOME/.local/bin:$PATH"
 
-if ! which aws > /dev/null; then
-  if ! which pip > /dev/null; then
-    curl -fsSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py > /dev/null
-    if ! python get-pip.py --user > /dev/null; then
-      >&2 echo bar
-      #PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1 | tr "\n" ";" | tr -d ":,")"
-    fi
-  fi
-
-  if ! which aws > /dev/null; then
-    if ! pip install --user awscli > /dev/null; then
-      >&2 echo foo
-      #AWS_INSTALL_FAILURE="$(pip install --user awscli 2>&1 | tr "\n" ";" | tr -d ":,")"
-    fi
-  fi
-fi
-
-PYTHONPATH=$(which python 2> /dev/null)
-PIPPATH=$(which pip 2> /dev/null)
-AWSPATH=$(which aws 2> /dev/null)
-
-echo "{\"aws\":\"$AWSPATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"path\":\"$PATH\",\"pip\":\"$PIPPATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
+echo "{\"aws\":\"$AWS_PATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"path\":\"$PATH\",\"pip\":\"$PIP_PATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHON_PATH\",\"pythonUserSite\":\"$PYTHON_USER_SITE\",\"workdir\":\"$WORKDIR\"}"
 EOF
 }
 

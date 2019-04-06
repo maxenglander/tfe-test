@@ -15,8 +15,12 @@ EOF
 data "template_file" "docker" {
     template = <<EOF
 DOCKER="{\"docker\":\"false\"}"
-if [ -f "/proc/self" ]; then
-  DOCKER="{\"docker\":\"true\"}"
+if [ -d "/proc/self" ]; then
+  if [ -f "/proc/self/cgroup" ]; then
+    if awk -F/ '$2 == "docker"' | read; then
+      DOCKER="{\"docker\":\"true\"}"
+    fi
+  fi
 fi
 echo "$DOCKER"
 EOF

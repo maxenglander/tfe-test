@@ -7,7 +7,7 @@ WORKDIR="/tmp/${uuid()}"
 if ! which aws > /dev/null; then
   if ! which pip > /dev/null; then
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py > /dev/null
-    if ! python get-pip.py --user; then
+    if ! python get-pip.py --user > /dev/null; then
       PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
     fi
   fi

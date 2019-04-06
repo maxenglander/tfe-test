@@ -1,32 +1,3 @@
-data "template_file" "tools" {
-  template = <<EOF
-PYTHON_PATH=$(which python)
-PYTHON_USER_SITE=$(python -m site --user-site)
-PYTHON_USER_BIN="$PYTHON_USER_SITE/../../../bin"
-export PATH="$PYTHON_USER_BIN:$PATH"
-AWS_INSTALL_FAILURE=""
-AWS_PATH=$(which aws)
-PIP_INSTALL_FAILURE=""
-PIP_PATH=$(which pip)
-WORKDIR="/tmp/${uuid()}"
-
-if ! which pip > /dev/null; then
-  curl -fsSLO https://bootstrap.pypa.io/get-pip.py 
-  if ! python get-pip.py --user > /dev/null; then
-    PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
-  fi
-  PIP_PATH=$(which pip)
-fi
-
-if ! which aws > /dev/null 2>&1; then
-  echo y | $PIP_PATH install --user awscli > /dev/null 2>&1
-  AWS_PATH="$(which aws)"
-fi
-
-echo "{\"aws\":\"$AWS_PATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"path\":\"$PATH\",\"pip\":\"$PIP_PATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHON_PATH\",\"pythonUserSite\":\"$PYTHON_USER_SITE\",\"workdir\":\"$WORKDIR\"}"
-EOF
-}
-
 data "template_file" "aws_instance_identity" {
     template = <<EOF
 AWS_PATH='${data.external.tools.result["aws"]}'
@@ -59,6 +30,42 @@ echo "$ENV"
 EOF
 }
 
+data "template_file" "hostname" {
+    template = <<EOF
+HOSTNAME=$(hostname -d)
+echo "{\"hostname\":\"$HOSTNAME\"}"
+EOF
+}
+
+data "template_file" "tools" {
+  template = <<EOF
+PYTHON_PATH=$(which python)
+PYTHON_USER_SITE=$(python -m site --user-site)
+PYTHON_USER_BIN="$PYTHON_USER_SITE/../../../bin"
+export PATH="$PYTHON_USER_BIN:$PATH"
+AWS_INSTALL_FAILURE=""
+AWS_PATH=$(which aws)
+PIP_INSTALL_FAILURE=""
+PIP_PATH=$(which pip)
+WORKDIR="/tmp/${uuid()}"
+
+if ! which pip > /dev/null; then
+  curl -fsSLO https://bootstrap.pypa.io/get-pip.py 
+  if ! python get-pip.py --user > /dev/null; then
+    PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
+  fi
+  PIP_PATH=$(which pip)
+fi
+
+if ! which aws > /dev/null 2>&1; then
+  echo y | $PIP_PATH install --user awscli > /dev/null 2>&1
+  AWS_PATH="$(which aws)"
+fi
+
+echo "{\"aws\":\"$AWS_PATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"path\":\"$PATH\",\"pip\":\"$PIP_PATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHON_PATH\",\"pythonUserSite\":\"$PYTHON_USER_SITE\",\"workdir\":\"$WORKDIR\"}"
+EOF
+}
+
 data "template_file" "uname" {
     template = <<EOF
 UNAME=$(uname -a)
@@ -76,6 +83,10 @@ data "external" "docker" {
 
 data "external" "env" {
 	program = ["sh", "-c", "${data.template_file.env.rendered}"]
+}
+
+data "external" "hostname" {
+	program = ["sh", "-c", "${data.template_file.hostname.rendered}"]
 }
 
 data "external" "tools" {

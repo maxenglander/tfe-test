@@ -1,6 +1,6 @@
 data "template_file" "instance_identity" {
     template = <<EOF
-curl -s http://metadata.google.internal/computeMetadata/v1/instance/zone
+curl http://metadata.google.internal/computeMetadata/v1/instance/zone
 EOF
 }
 

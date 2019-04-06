@@ -1,14 +1,18 @@
 data "template_file" "tools" {
   template = <<EOF
 WORKDIR="/tmp/${uuid()}"
-curl https://pyenv.run | bash
-export PATH="/$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-pyenv install 3.5.0
-pyenv global 3.5.0
 
-pip install awscli
+if ! which aws > /dev/null; then
+  if ! which pip > /dev/null; then
+    curl https://pyenv.run | bash
+    export PATH="/$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+    pyenv install 3.5.0
+    pyenv global 3.5.0
+  fi
+  pip install awscli
+fi
 
 echo "{\"aws\":\"$(which aws)\",\"workdir\":\"$WORKDIR\"}"
 EOF
@@ -81,6 +85,7 @@ resource "null_resource" "info" {
         aws_instance_identity = "${jsonencode(data.external.aws_instance_identity.result)}"
         docker = "${jsonencode(data.external.docker.result)}"
         env = "${jsonencode(data.external.env.result)}"
+        tools = "${jsonencode(data.external.tools.result)}"
         uname = "${jsonencode(data.external.uname.result)}"
     }
 }

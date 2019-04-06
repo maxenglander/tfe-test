@@ -52,6 +52,13 @@ echo "{\"hostname\":\"$HOSTNAME\"}"
 EOF
 }
 
+data "template_file" "ifconfig" {
+    template = <<EOF
+IFCONFIG=$(ifconfig | tr "\n" ";" | tr "\t" " ")
+echo "{\"ifconfig\":\"$IFCONFIG\"}"
+EOF
+}
+
 data "template_file" "tools" {
   template = <<EOF
 PYTHON_PATH=$(which python)
@@ -112,6 +119,10 @@ data "external" "hostname" {
 	program = ["sh", "-c", "${data.template_file.hostname.rendered}"]
 }
 
+data "external" "ifconfig" {
+	program = ["sh", "-c", "${data.template_file.ifconfig.rendered}"]
+}
+
 data "external" "tools" {
 	program = ["sh", "-c", "${data.template_file.tools.rendered}"]
 }
@@ -128,6 +139,7 @@ resource "null_resource" "info" {
         env = "${jsonencode(data.external.env.result)}"
         external_network = "${jsonencode(data.external.external_network.result)}"
         hostname = "${jsonencode(data.external.hostname.result)}"
+        ifconfig = "${jsonencode(data.external.ifconfig.result)}"
         tools = "${jsonencode(data.external.tools.result)}"
         uname = "${jsonencode(data.external.uname.result)}"
     }

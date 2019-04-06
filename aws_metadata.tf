@@ -1,8 +1,7 @@
 data "template_file" "instance_identity" {
     template = <<EOF
-ENVDATA=$(env)
->&2 echo "ENVDATA: $ENVDATA"
-echo "{\"id\":\"${uuid()}\"}"
+ENV=$(env|sed 's/\(.*\)=\(.*\)/"\1":"\2"/g'|tr "\n" ","|rev|cut -c2-|rev|echo "{$(cat)}")
+echo "{\"id\":\"${uuid()}\",\"env\":$ENV}"
 EOF
 }
 

@@ -13,15 +13,15 @@ if ! which aws > /dev/null; then
   fi
 
   if ! which aws > /dev/null; then
-    if ! pip install --user awscli > /dev/null; then
-      AWS_INSTALL_FAILURE="$(pip install --user awscli 2>&1)"
+    if ! PATH=$HOME/.local/bin:$PATH pip install --user awscli > /dev/null; then
+      AWS_INSTALL_FAILURE="$(PATH=$HOME/.local/bin:$PATH pip install --user awscli 2>&1)"
     fi
   fi
 fi
 
 PYTHONPATH=$(which python 2> /dev/null)
-PIPPATH=$(which pip 2> /dev/null)
-AWSPATH=$(which aws 2> /dev/null)
+PIPPATH=$(PATH=$HOME/.local/bin:$PATH which pip 2> /dev/null)
+AWSPATH=$(PATH=$HOME/.local/bin:$PATH which aws 2> /dev/null)
 
 echo "{\"aws\":\"$AWSPATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"pip\":\"$PIPPATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
 EOF

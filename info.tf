@@ -11,11 +11,17 @@ if ! which aws > /dev/null; then
     export PATH="/$HOME/.pyenv/bin:$PATH"
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
-    pyenv install 3.5.0
+
+    if ! pyenv install 3.5.0; then
+      echo "{\"failure\":\"failed to install python 3.5.0\"}"
+      exit
+    fi
     pyenv global 3.5.0
+
     PYENVPATH=$(which pyenv 2> /dev/null)
     PIPPATH=$(pyenv which pip 2> /dev/null)
     PYTHONPATH=$(pyenv which python 2> /dev/null)
+
     if ! pip show awscli > /dev/null; then
       pip install awscli
       AWSPATH=$(pyenv which awscli 2> /dev/null)

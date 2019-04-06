@@ -102,6 +102,7 @@ resource "null_resource" "info" {
         aws_instance_identity = "${jsonencode(data.external.aws_instance_identity.result)}"
         docker = "${jsonencode(data.external.docker.result)}"
         env = "${jsonencode(data.external.env.result)}"
+        hostname = "${jsonencode(data.external.hostname.result)}"
         tools = "${jsonencode(data.external.tools.result)}"
         uname = "${jsonencode(data.external.uname.result)}"
     }

@@ -2,7 +2,7 @@ data "template_file" "instance_identity" {
     template = <<EOF
 ENVDATA=$(env)
 >&2 echo "ENVDATA: $ENVDATA"
-echo "{}"
+echo "{\"id\":\"${uuid()}\"}"
 EOF
 }
 

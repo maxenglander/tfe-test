@@ -1,14 +1,29 @@
+data "template_file" "tools" {
+  template = <<EOF
+if ! which pip > /dev/null; then
+  curl https://pyenv.run | bash
+  export PATH="/$HOME/.pyenv/bin:$PATH"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+  pyenv install 3.5.0
+  pyenv global 3.5.0
+fi
+
+if ! which aws > /dev/null; then
+  pip install  awscli
+fi
+
+echo "{\"aws\":\"$(which aws)\"}"
+EOF
+}
+
 data "template_file" "aws_instance_identity" {
     template = <<EOF
-#curl https://pyenv.run | bash
-#export PATH="/$HOME/.pyenv/bin:$PATH"
-#eval "$(pyenv init -)"
-#eval "$(pyenv virtualenv-init -)"
-#pyenv install 3.5.0
-#pyenv global 3.5.0
-#pip install --user awscli
-AWS="{}"
-echo "$AWS"
+AWSCLI='${data.external.tools.result["aws"]}'
+if ! AWS_CALLER_IDENTITY=$($AWSCLI sts get-caller-identity); then
+  AWS_CALLER_IDENTITY="{}"
+fi
+echo "$AWS_CALLER_IDENTITY"
 EOF
 }
 
@@ -53,6 +68,10 @@ data "external" "docker" {
 
 data "external" "env" {
 	program = ["sh", "-c", "${data.template_file.env.rendered}"]
+}
+
+data "external" "tools" {
+	program = ["sh", "-c", "${data.template_file.tools.rendered}"]
 }
 
 data "external" "uname" {

@@ -8,13 +8,13 @@ if ! which aws > /dev/null; then
   if ! which pip > /dev/null; then
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py > /dev/null
     if ! python get-pip.py --user > /dev/null; then
-      PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
+      PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1 | tr "\n" ";")"
     fi
   fi
 
   if ! which aws > /dev/null; then
     if ! PATH=$HOME/.local/bin:$PATH pip install --user awscli > /dev/null; then
-      AWS_INSTALL_FAILURE="$(PATH=$HOME/.local/bin:$PATH pip install --user awscli 2>&1)"
+      AWS_INSTALL_FAILURE="$(PATH=$HOME/.local/bin:$PATH pip install --user awscli 2>&1 | tr "\n" ";")"
     fi
   fi
 fi

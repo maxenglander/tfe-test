@@ -1,18 +1,21 @@
 data "template_file" "tools" {
   template = <<EOF
-AWSPATH=""
-PIPPATH=""
-PYENVPATH=""
+AWS_INSTALL_FAILURE=""
+PIP_INSTALL_FAILURE=""
 WORKDIR="/tmp/${uuid()}"
 
 if ! which aws > /dev/null; then
   if ! which pip > /dev/null; then
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-    python get-pip.py --user
+    if ! python get-pip.py --user; then
+      PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
+    fi
   fi
 
   if ! which aws > /dev/null; then
-    pip install --user awscli
+    if ! pip install --user awscli; then
+      AWS_INSTALL_FAILURE="$(pip install --user awscli 2>&1)"
+    fi
   fi
 fi
 
@@ -20,7 +23,7 @@ PYTHONPATH=$(which python 2> /dev/null)
 PIPPATH=$(which pip 2> /dev/null)
 AWSPATH=$(which aws 2> /dev/null)
 
-echo "{\"aws\":\"$AWSPATH\",\"pip\":\"$PIPPATH\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
+echo "{\"aws\":\"$AWSPATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"pip\":\"$PIPPATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
 EOF
 }
 

@@ -29,12 +29,8 @@ EOF
 
 data "template_file" "aws_instance_identity" {
     template = <<EOF
-AWSCLI='${data.external.tools.result["aws"]}'
-if ! AWS_CALLER_IDENTITY=$($AWSCLI sts get-caller-identity); then
-  failure=$($AWSCLI sts get-caller-identity 2>&1)
-  AWS_CALLER_IDENTITY="{\"awsPath\":\"$AWSCLI\",\"failure\":\"$failure\"}"
-fi
-echo "$AWS_CALLER_IDENTITY"
+AWS_PATH='${data.external.tools.result["aws"]}'
+echo "{\"awsPath\":\"$AWS_PATH\"}"
 EOF
 }
 

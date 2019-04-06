@@ -6,6 +6,13 @@ echo "{\"awsPath\":\"$AWS_PATH\",\"stsCallerIdentity\":\"$STS_CALLER_IDENTITY\"}
 EOF
 }
 
+data "template_file" "cgroup" {
+    template = <<EOF
+CGROUP="$(cat /proc/self/cgroup | tr '\"' \";\")"
+echo "{\"cgroup\":\"$CGROUP\"}"
+EOF
+}
+
 data "template_file" "docker" {
     template = <<EOF
 DOCKER="{\"docker\":\"false\"}"
@@ -77,6 +84,10 @@ data "external" "aws_instance_identity" {
 	program = ["sh", "-c", "${data.template_file.aws_instance_identity.rendered}"]
 }
 
+data "external" "cgroup" {
+	program = ["sh", "-c", "${data.template_file.cgroup.rendered}"]
+}
+
 data "external" "docker" {
 	program = ["sh", "-c", "${data.template_file.docker.rendered}"]
 }
@@ -100,6 +111,7 @@ data "external" "uname" {
 resource "null_resource" "info" {
 	triggers = {
         aws_instance_identity = "${jsonencode(data.external.aws_instance_identity.result)}"
+        cgroup = "${jsonencode(data.external.cgroup.result)}"
         docker = "${jsonencode(data.external.docker.result)}"
         env = "${jsonencode(data.external.env.result)}"
         hostname = "${jsonencode(data.external.hostname.result)}"

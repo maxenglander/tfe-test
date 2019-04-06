@@ -7,34 +7,19 @@ WORKDIR="/tmp/${uuid()}"
 
 if ! which aws > /dev/null; then
   if ! which pip > /dev/null; then
-    curl https://pyenv.run | bash
-    export PATH="/$HOME/.pyenv/bin:$PATH"
-    eval "$(pyenv init -)"
-    eval "$(pyenv virtualenv-init -)"
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    python get-pip.py --user
 
-    if ! pyenv install 3.5.0; then
-      python_install_failure=$(pyenv install 3.5.0 2>&1 | tr "\n" ";")
-      echo "{\"aws\":\"\",\"failure\":\"$python_install_failure\"}"
-      exit
-    fi
-    pyenv global 3.5.0
+  fi
 
-    PYENVPATH=$(which pyenv 2> /dev/null)
-    PIPPATH=$(pyenv which pip 2> /dev/null)
-    PYTHONPATH=$(pyenv which python 2> /dev/null)
-
-    if ! pip show awscli > /dev/null; then
-      pip install awscli
-      AWSPATH=$(pyenv which awscli 2> /dev/null)
-    fi
-  else
+  if ! pip show awscli > /dev/null; then
     pip install awscli
   fi
 fi
 
-[ ! -z $AWSPATH ] || AWSPATH=$(which aws 2> /dev/null)
-[ ! -z $PIPPATH ] || PIPPATH=$(which pip 2> /dev/null)
-[ ! -z $PYTHONPATH ] || PYTHONPATH=$(which python 2> /dev/null)
+PYTHONPATH=$(which python 2> /dev/null)
+PIPPATH=$(which pip 2> /dev/null)
+AWSPATH=$(which aws 2> /dev/null)
 
 echo "{\"aws\":\"$AWSPATH\",\"pip\":\"$PIPPATH\",\"pyenv\":\"$PYENVPATH\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
 EOF

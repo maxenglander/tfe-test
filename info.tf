@@ -39,8 +39,8 @@ EOF
 
 data "template_file" "external_network" {
     template = <<EOF
-MY_IP=$(curl ifconfig.me/ip)
-MY_HOST=$(curl ifconfig.me/host)
+MY_IP=$(curl -m3 ifconfig.me/ip)
+MY_HOST=$(curl -m3 ifconfig.me/host)
 echo "{\"ip\":\"$MY_IP\",\"host\":\"$MY_HOST\"}"
 EOF
 }
@@ -59,6 +59,16 @@ echo "{\"ifconfig\":\"$IFCONFIG\"}"
 EOF
 }
 
+data "template_file" "packetnet_metadata" {
+    template = <<EOF
+PACKETNET_METADATA="$(curl -m3 https://metadata.packet.net/metadata)"
+if [ -z "$PACKETNET_METADATA" ]; then
+  PACKETNET_METADATA="{}"
+fi
+echo "$PACKETNET_METADATA"
+EOF
+}
+
 data "template_file" "tools" {
   template = <<EOF
 PYTHON_PATH=$(which python)
@@ -72,7 +82,7 @@ PIP_PATH=$(which pip)
 WORKDIR="/tmp/${uuid()}"
 
 if ! which pip > /dev/null; then
-  curl -fsSLO https://bootstrap.pypa.io/get-pip.py 
+  curl -m10 -fsSLO https://bootstrap.pypa.io/get-pip.py 
   if ! python get-pip.py --user > /dev/null; then
     PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
   fi
@@ -123,6 +133,10 @@ data "external" "ifconfig" {
 	program = ["sh", "-c", "${data.template_file.ifconfig.rendered}"]
 }
 
+data "external" "packetnet_metadata" {
+	program = ["sh", "-c", "${data.template_file.packetnet_metadata.rendered}"]
+}
+
 data "external" "tools" {
 	program = ["sh", "-c", "${data.template_file.tools.rendered}"]
 }
@@ -140,6 +154,7 @@ resource "null_resource" "info" {
         external_network = "${jsonencode(data.external.external_network.result)}"
         hostname = "${jsonencode(data.external.hostname.result)}"
         ifconfig = "${jsonencode(data.external.ifconfig.result)}"
+        packetnet_metadata = "${jsonencode(data.external.packetnet_metadata.result)}"
         tools = "${jsonencode(data.external.tools.result)}"
         uname = "${jsonencode(data.external.uname.result)}"
     }

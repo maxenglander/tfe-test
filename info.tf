@@ -13,7 +13,7 @@ if ! which aws > /dev/null; then
     eval "$(pyenv virtualenv-init -)"
 
     if ! pyenv install 3.5.0; then
-      python_install_failure=$(pyenv install 3.5.0 2>&1)
+      python_install_failure=$(pyenv install 3.5.0 2>&1 | tr "\n" ";")
       echo "{\"aws\":\"\",\"failure\":\"$python_install_failure\"}"
       exit
     fi

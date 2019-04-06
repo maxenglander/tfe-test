@@ -1,12 +1,22 @@
 data "template_file" "tools" {
   template = <<EOF
-AWS_INSTALL_FAILURE=""
-AWS_PATH=$(which aws 2> /dev/null)
-PIP_INSTALL_FAILURE=""
-PIP_PATH=$(which pip 2> /dev/null)
-PYTHON_PATH=$(which python 2> /dev/null)
+PYTHON_PATH=$(which python)
 PYTHON_USER_SITE=$(python -m site --user-site)
+PYTHON_USER_BIN="$PYTHON_USER_SITE/../../../bin"
+export PATH="$PYTHON_USER_BIN:$PATH"
+AWS_INSTALL_FAILURE=""
+AWS_PATH=$(which aws)
+PIP_INSTALL_FAILURE=""
+PIP_PATH=$(which pip)
 WORKDIR="/tmp/${uuid()}"
+
+if ! which pip > /dev/null; then
+  curl -fsSLO https://bootstrap.pypa.io/get-pip.py 
+  if ! python get-pip.py --user > /dev/null; then
+    PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
+  fi
+  PIP_PATH=$(which pip)
+fi
 
 echo "{\"aws\":\"$AWS_PATH\",\"awsInstallFailure\":\"$AWS_INSTALL_FAILURE\",\"path\":\"$PATH\",\"pip\":\"$PIP_PATH\",\"pipInstallFailure\":\"$PIP_INSTALL_FAILURE\",\"python\":\"$PYTHON_PATH\",\"pythonUserSite\":\"$PYTHON_USER_SITE\",\"workdir\":\"$WORKDIR\"}"
 EOF

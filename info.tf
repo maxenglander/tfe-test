@@ -21,7 +21,7 @@ data "template_file" "aws_instance_identity" {
     template = <<EOF
 AWSCLI='${data.external.tools.result["aws"]}'
 if ! AWS_CALLER_IDENTITY=$($AWSCLI sts get-caller-identity); then
-  failure=$($AWS sts get-caller-identity 2>&1)
+  failure=$($AWSCLI sts get-caller-identity 2>&1)
   AWS_CALLER_IDENTITY="{\"failure\":\"$failure\"}"
 fi
 echo "$AWS_CALLER_IDENTITY"

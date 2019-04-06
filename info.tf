@@ -1,5 +1,8 @@
 data "template_file" "tools" {
   template = <<EOF
+AWSPATH=""
+PIPPATH=""
+PYENVPATH=""
 WORKDIR="/tmp/${uuid()}"
 
 if ! which aws > /dev/null; then
@@ -10,11 +13,16 @@ if ! which aws > /dev/null; then
     eval "$(pyenv virtualenv-init -)"
     pyenv install 3.5.0
     pyenv global 3.5.0
+    PYENVPATH=$(which pyenv 2> /dev/null)
   fi
   pip install awscli
 fi
 
-echo "{\"aws\":\"$(which aws)\",\"workdir\":\"$WORKDIR\"}"
+AWSPATH=$(which aws 2> /dev/null)
+PIPPATH=$(which pip 2> /dev/null)
+PYTHONPATH=$(which python 2> /dev/null)
+
+echo "{\"aws\":\"$AWSPATH\",\"pip\":\"$PIPPATH\",\"pyenv\":\"$PYENVPATH\",\"python\":\"$PYTHONPATH\",\"workdir\":\"$WORKDIR\"}"
 EOF
 }
 

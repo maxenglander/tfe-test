@@ -6,14 +6,14 @@ WORKDIR="/tmp/${uuid()}"
 
 if ! which aws > /dev/null; then
   if ! which pip > /dev/null; then
-    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py > /dev/null
     if ! python get-pip.py --user; then
       PIP_INSTALL_FAILURE="$(python get-pip.py --user 2>&1)"
     fi
   fi
 
   if ! which aws > /dev/null; then
-    if ! pip install --user awscli; then
+    if ! pip install --user awscli > /dev/null; then
       AWS_INSTALL_FAILURE="$(pip install --user awscli 2>&1)"
     fi
   fi

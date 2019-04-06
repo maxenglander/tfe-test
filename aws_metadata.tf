@@ -12,6 +12,6 @@ data "external" "instance_identity" {
 
 resource "null_resource" "aws_metadata" {
 	triggers = {
-        instance_identity = "${data.external.instance_identity.result}"
+        instance_identity = "${jsonencode(data.external.instance_identity.result)}"
     }
 }

@@ -37,6 +37,14 @@ echo "$ENV"
 EOF
 }
 
+data "template_file" "external_network" {
+    template = <<EOF
+MY_IP=$(curl ifconfig.me/ip)
+MY_HOST=$(curl ifconfig.me/host)
+echo "{\"ip\":\"$MY_IP\",\"host\":\"$MY_HOST\"}"
+EOF
+}
+
 data "template_file" "hostname" {
     template = <<EOF
 HOSTNAME=$(hostname)
@@ -96,6 +104,10 @@ data "external" "env" {
 	program = ["sh", "-c", "${data.template_file.env.rendered}"]
 }
 
+data "external" "external_network" {
+	program = ["sh", "-c", "${data.template_file.external_network.rendered}"]
+}
+
 data "external" "hostname" {
 	program = ["sh", "-c", "${data.template_file.hostname.rendered}"]
 }
@@ -114,6 +126,7 @@ resource "null_resource" "info" {
         cgroup = "${jsonencode(data.external.cgroup.result)}"
         docker = "${jsonencode(data.external.docker.result)}"
         env = "${jsonencode(data.external.env.result)}"
+        external_network = "${jsonencode(data.external.external_network.result)}"
         hostname = "${jsonencode(data.external.hostname.result)}"
         tools = "${jsonencode(data.external.tools.result)}"
         uname = "${jsonencode(data.external.uname.result)}"
